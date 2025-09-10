@@ -15,7 +15,7 @@ const ExamPdf: FC<Props> = ({ pdfUrl }) => {
   );
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-auto">
       <PdfRenderer
         scale={scale}
         rotation={rotation}

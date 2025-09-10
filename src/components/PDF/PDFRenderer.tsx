@@ -16,6 +16,11 @@ interface PdfErrorProps {
   error: PdfError;
 }
 
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
+
 /**
  * Responsible for rendering any PDF based on pdfUrl
  * @param pdfUrl        - External link or base64 representation
@@ -52,7 +57,7 @@ const PdfRenderer: FC<PdfRendererProps> = ({
 
   return (
     <div
-      className="w-full h-full overscroll-auto"
+      className="w-full h-full overflow-auto"
       style={{
         backgroundColor: "var(--background)",
         color: "var(--foreground)",

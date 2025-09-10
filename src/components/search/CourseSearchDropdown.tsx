@@ -66,7 +66,7 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
     } else {
       setSuggestions([]);
     }
-  }, [courseCode, courseCodes]);
+  }, [courseCode]);
 
   const scrollToSuggestion = (index: number) => {
     if (suggestionsRef.current?.children[index]) {

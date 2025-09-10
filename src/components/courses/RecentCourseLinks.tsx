@@ -39,6 +39,7 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
               variant="ghost"
               size="sm"
               className="group"
+              key={index}
             >
               <span className="text-foreground hover:text-foreground transition-colors">
                 {activity.courseCode}

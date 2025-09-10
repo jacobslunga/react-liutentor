@@ -7,6 +7,13 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useParams } from "react-router-dom";
 import usePdf from "@/hooks/usePdf";
+import ExamPdf from "@/components/PDF/ExamPdf";
+import SolutionPdf from "@/components/PDF/SolutionPdf";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 const TentaPage: FC = () => {
   const { language } = useLanguage();
@@ -33,6 +40,7 @@ const TentaPage: FC = () => {
     isLoading: detailLoading,
     isError: detailError,
   } = useExamDetail(Number(examId));
+  console.log(examDetail);
 
   const formatExamDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("sv-SE", {
@@ -88,7 +96,31 @@ const TentaPage: FC = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center w-screen overflow-y-hidden"></div>
+    <div className="flex h-screen flex-col items-center justify-center w-screen">
+      {/** Desktop PDF View */}
+      <div className="w-screen h-screen hidden md:flex">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={50} minSize={30}>
+            <ExamPdf pdfUrl={examDetail.exam.pdf_url} />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={50} minSize={20}>
+            <div className="w-full h-full">
+              {examDetail.solutions.length > 0 ? (
+                <SolutionPdf pdfUrl={examDetail.solutions[0].pdf_url} />
+              ) : (
+                <p>No pdf</p>
+              )}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+
+      {/** Mobile PDF View */}
+      <div className="w-screen h-screen flex md:hidden">
+        <ExamPdf pdfUrl={examDetail.exam.pdf_url} />
+      </div>
+    </div>
   );
 };
 
