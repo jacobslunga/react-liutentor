@@ -1,9 +1,10 @@
 import { ClockFillIcon, SearchIcon, XIcon } from "@primer/octicons-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { CornerUpRight } from "lucide-react";
+import useCourseHistory from "@/stores/CourseHistoryStore";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useRecentActivity } from "@/stores/RecentActivityStore";
 import useSWR from "swr";
 import { useTranslation } from "@/contexts/TranslationsContext";
 
@@ -26,6 +27,9 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
 }) => {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { courses, addCourse, loadCourses } = useCourseHistory();
 
   const [courseCode, setCourseCode] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -34,10 +38,6 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const {
-    state: { recentActivities },
-    dispatch,
-  } = useRecentActivity();
   const { data: courseCodes = [], isLoading } = useSWR(
     "courseCodes",
     fetchCourseCodes,
@@ -47,8 +47,12 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
     }
   );
 
-  const recentCourseCodes = recentActivities
-    .map((activity) => activity.courseCode)
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const recentCourseCodes = courses
+    .map((course) => course.courseCode)
     .slice(0, 4);
 
   useEffect(() => {
@@ -112,16 +116,16 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
     const searchCode = course.toUpperCase().trim();
     if (!searchCode) return;
 
-    dispatch({
-      type: "ADD",
-      payload: {
-        courseCode: searchCode,
-        timestamp: Date.now(),
-      },
-    });
+    addCourse(searchCode);
 
     setCourseCode("");
     inputRef.current?.blur();
+
+    navigate(
+      pathname.includes("stats")
+        ? `/search/${searchCode}/stats`
+        : `/search/${searchCode}`
+    );
   };
 
   const handleFocus = () => {

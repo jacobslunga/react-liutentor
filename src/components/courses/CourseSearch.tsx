@@ -14,9 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import useCourseHistory from "@/stores/CourseHistoryStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { useRecentActivity } from "@/stores/RecentActivityStore";
 import useSWR from "swr";
 import { useTranslation } from "@/contexts/TranslationsContext";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -71,9 +71,9 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
   searchMethod,
   setSearchMethod,
 }) => {
+  const { addCourse, courses, loadCourses } = useCourseHistory();
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const { state: recentState, dispatch } = useRecentActivity();
   const { t } = useTranslation();
 
   const [courseCode, setCourseCode] = useState("");
@@ -104,6 +104,10 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
     () => [...exampleCourses].sort(() => Math.random() - 0.5),
     [exampleCourses]
   );
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
 
   useEffect(() => {
     if (courseCode) return;
@@ -171,13 +175,7 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
     const searchCode = course.toUpperCase();
     if (!searchCode) return;
 
-    dispatch({
-      type: "ADD",
-      payload: {
-        courseCode: searchCode,
-        timestamp: Date.now(),
-      },
-    });
+    addCourse(searchCode);
 
     setCourseCode("");
     setShowSuggestions(false);
@@ -197,7 +195,7 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
     } else if (e.key === "ArrowDown") {
       const newIndex = Math.min(
         selectedIndex + 1,
-        recentState.recentActivities.length + suggestions.length - 1
+        courses.length + suggestions.length - 1
       );
       setSelectedIndex(newIndex);
       scrollToSuggestion(newIndex);
@@ -268,95 +266,63 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
         )}
       </div>
 
-      {showSuggestions &&
-        (recentState.recentActivities.length > 0 || suggestions.length > 0) && (
-          <div className="absolute w-full left-0 mt-3 bg-background border shadow-md z-40 max-h-72 rounded-md overflow-hidden text-sm will-change-transform">
-            <div className="relative">
-              {isLoading && (
-                <div className="mt-2 absolute left-3 text-sm text-muted-foreground">
-                  Laddar kurser...
-                </div>
-              )}
+      {showSuggestions && (courses.length > 0 || suggestions.length > 0) && (
+        <div className="absolute w-full left-0 mt-3 bg-background border shadow-md z-40 max-h-72 rounded-md overflow-hidden text-sm will-change-transform">
+          <div className="relative">
+            {isLoading && (
+              <div className="mt-2 absolute left-3 text-sm text-muted-foreground">
+                Laddar kurser...
+              </div>
+            )}
 
-              {recentState.recentActivities.length > 0 && (
-                <div ref={suggestionsRef}>
-                  <div className="px-3 pt-3 pb-1 text-muted-foreground font-medium">
-                    {t("recentSearches")}
-                  </div>
-                  {recentState.recentActivities
-                    .slice(0, 4)
-                    .map((activity, index) => (
-                      <div
-                        key={`recent-${activity.courseCode}`}
-                        className={`flex items-center px-3 py-2 cursor-pointer ${
-                          index === selectedIndex
-                            ? "bg-muted text-foreground"
-                            : "hover:bg-muted/50"
-                        } transition-colors`}
-                        onMouseDown={() =>
-                          handleSelectCourse(activity.courseCode)
-                        }
-                      >
-                        <Clock className="w-4 h-4 mr-2 opacity-70" />
-                        <span className="flex-1">{activity.courseCode}</span>
-                        <CornerUpRight className="w-4 h-4 opacity-50" />
-                      </div>
-                    ))}
+            {suggestions.length > 0 && (
+              <>
+                <div className="px-3 pt-3 pb-1 text-muted-foreground font-medium">
+                  {language === "sv" ? "Sökresultat" : "Search Results"}
                 </div>
-              )}
-
-              {suggestions.length > 0 && (
-                <>
-                  {recentState.recentActivities.length > 0 && (
-                    <div className="border-t mx-2 my-1" />
-                  )}
-                  <div className="px-3 pt-3 pb-1 text-muted-foreground font-medium">
-                    {t("allCourses")}
+                <div ref={listParentRef} className="overflow-y-auto max-h-56">
+                  <div
+                    style={{
+                      height: rowVirtualizer.getTotalSize(),
+                      position: "relative",
+                    }}
+                  >
+                    {rowVirtualizer.getVirtualItems().map((v) => {
+                      const suggestion = suggestions[v.index];
+                      const isSelected =
+                        v.index + courses.length === selectedIndex;
+                      return (
+                        <div
+                          key={suggestion}
+                          className={`flex items-center px-3 py-2 cursor-pointer ${
+                            isSelected
+                              ? "bg-muted text-foreground"
+                              : "hover:bg-muted/50"
+                          } transition-colors`}
+                          onMouseDown={() => handleSelectCourse(suggestion)}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: v.size,
+                            transform: `translateY(${v.start}px)`,
+                          }}
+                        >
+                          <span className="flex-1 font-normal">
+                            {suggestion}
+                          </span>
+                          <CornerUpRight className="w-4 h-4 opacity-50" />
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div ref={listParentRef} className="overflow-y-auto max-h-56">
-                    <div
-                      style={{
-                        height: rowVirtualizer.getTotalSize(),
-                        position: "relative",
-                      }}
-                    >
-                      {rowVirtualizer.getVirtualItems().map((v) => {
-                        const suggestion = suggestions[v.index];
-                        const isSelected =
-                          v.index + recentState.recentActivities.length ===
-                          selectedIndex;
-                        return (
-                          <div
-                            key={suggestion}
-                            className={`flex items-center px-3 py-2 cursor-pointer ${
-                              isSelected
-                                ? "bg-muted text-foreground"
-                                : "hover:bg-muted/50"
-                            } transition-colors`}
-                            onMouseDown={() => handleSelectCourse(suggestion)}
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              width: "100%",
-                              height: v.size,
-                              transform: `translateY(${v.start}px)`,
-                            }}
-                          >
-                            <span className="flex-1 font-normal">
-                              {suggestion}
-                            </span>
-                            <CornerUpRight className="w-4 h-4 opacity-50" />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };

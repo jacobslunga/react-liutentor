@@ -2,18 +2,15 @@ import { useEffect, useState } from "react";
 
 import { ArrowUpRightIcon } from "@primer/octicons-react";
 import { Button } from "@/components/ui/button";
+import useCourseHistory from "@/stores/CourseHistoryStore";
 import { useNavigate } from "react-router-dom";
-import { useRecentActivity } from "@/stores/RecentActivityStore";
 
 interface Props {
   searchMethod: string;
 }
 
 const RecentCourseLinks = ({ searchMethod }: Props) => {
-  const {
-    state: { recentActivities },
-    dispatch,
-  } = useRecentActivity();
+  const { courses, addCourse, loadCourses } = useCourseHistory();
   const [maxVisible, setMaxVisible] = useState(3);
   const navigate = useNavigate();
 
@@ -25,24 +22,18 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
       else setMaxVisible(4);
     };
 
+    loadCourses();
+
     updateVisible();
     window.addEventListener("resize", updateVisible);
     return () => window.removeEventListener("resize", updateVisible);
   }, []);
 
-  console.log(recentActivities);
-
   const handleSelectCourse = (course: string) => {
     const searchCode = course.toUpperCase();
     if (!searchCode) return;
 
-    dispatch({
-      type: "ADD",
-      payload: {
-        courseCode: searchCode,
-        timestamp: Date.now(),
-      },
-    });
+    addCourse(searchCode);
 
     navigate(
       searchMethod === "stats"
@@ -51,13 +42,13 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
     );
   };
 
-  const visibleActivities = recentActivities.slice(0, maxVisible);
+  const visibleActivities = courses.slice(0, maxVisible);
   if (visibleActivities.length === 0) return null;
 
   return (
     <div className="w-full max-w-md">
       <div className="flex items-center justify-center w-full overflow-x-auto space-x-3 text-sm">
-        {visibleActivities.map((activity, index) => (
+        {visibleActivities.slice(0, 3).map((activity, index) => (
           <>
             <Button
               onClick={() => handleSelectCourse(activity.courseCode)}
