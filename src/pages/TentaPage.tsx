@@ -6,9 +6,12 @@ import { useExamDetail } from "@/api/hooks/useExamDetail";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useParams } from "react-router-dom";
+import usePdf from "@/hooks/usePdf";
 
 const TentaPage: FC = () => {
   const { language } = useLanguage();
+  const exam = usePdf("exam");
+  const solution = usePdf("solution");
 
   useEffect(() => {
     window.scrollTo(0, 0);

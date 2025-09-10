@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-
 import { ArrowUpRightIcon } from "@primer/octicons-react";
 import { Button } from "@/components/ui/button";
 import useCourseHistory from "@/stores/CourseHistoryStore";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Props {

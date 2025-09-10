@@ -2,18 +2,18 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { useState, type FC } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
-type PDFError = "no-url" | "no-load";
+type PdfError = "no-url" | "no-load";
 
-interface PDFRendererProps {
-  pdfUrl: string;
+interface PdfRendererProps {
+  pdfUrl: string | null;
   scale: number;
   rotation: number;
   numPages: number;
   onLoadSuccess: ({ numPages }: { numPages: number }) => void;
 }
 
-interface PDFErrorProps {
-  error: PDFError;
+interface PdfErrorProps {
+  error: PdfError;
 }
 
 /**
@@ -23,7 +23,7 @@ interface PDFErrorProps {
  * @param rotation      - Initial rotation of the PDF
  * @param onLoadSuccess - Callback after rendering the PDF
  */
-const PDFRenderer: FC<PDFRendererProps> = ({
+const PdfRenderer: FC<PdfRendererProps> = ({
   pdfUrl,
   scale = 1,
   rotation = 1,
@@ -31,7 +31,7 @@ const PDFRenderer: FC<PDFRendererProps> = ({
   onLoadSuccess,
 }) => {
   if (!pdfUrl) {
-    return <PDFError error="no-url" />;
+    return <PdfError error="no-url" />;
   }
 
   const { effectiveTheme } = useTheme();
@@ -88,8 +88,8 @@ const PDFRenderer: FC<PDFRendererProps> = ({
   );
 };
 
-const PDFError: FC<PDFErrorProps> = ({ error }) => {
+const PdfError: FC<PdfErrorProps> = ({ error }) => {
   return <div>{error}</div>;
 };
 
-export default PDFRenderer;
+export default PdfRenderer;
