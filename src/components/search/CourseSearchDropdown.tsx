@@ -1,4 +1,4 @@
-import { ClockFillIcon, SearchIcon, XIcon } from "@primer/octicons-react";
+import { ClockIcon, SearchIcon, XIcon } from "@primer/octicons-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -215,7 +215,7 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
                   }`}
                   onMouseDown={() => handleSelectCourse(suggestion)}
                 >
-                  <ClockFillIcon className="w-4 h-4 mr-2 opacity-70" />
+                  <ClockIcon className="w-4 h-4 mr-2 opacity-70" />
                   <span className="flex-1">{suggestion}</span>
                   <CornerUpRight className="w-4 h-4 opacity-50" />
                 </div>

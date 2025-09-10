@@ -11,22 +11,10 @@ interface Props {
 
 const RecentCourseLinks = ({ searchMethod }: Props) => {
   const { courses, addCourse, loadCourses } = useCourseHistory();
-  const [maxVisible, setMaxVisible] = useState(3);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const updateVisible = () => {
-      const width = window.innerWidth;
-      if (width >= 1024) setMaxVisible(6);
-      else if (width >= 768) setMaxVisible(5);
-      else setMaxVisible(4);
-    };
-
     loadCourses();
-
-    updateVisible();
-    window.addEventListener("resize", updateVisible);
-    return () => window.removeEventListener("resize", updateVisible);
   }, []);
 
   const handleSelectCourse = (course: string) => {
@@ -42,13 +30,10 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
     );
   };
 
-  const visibleActivities = courses.slice(0, maxVisible);
-  if (visibleActivities.length === 0) return null;
-
   return (
     <div className="w-full max-w-md">
       <div className="flex items-center justify-center w-full overflow-x-auto space-x-3 text-sm">
-        {visibleActivities.slice(0, 3).map((activity, index) => (
+        {courses.slice(0, 3).map((activity, index) => (
           <>
             <Button
               onClick={() => handleSelectCourse(activity.courseCode)}
@@ -61,7 +46,7 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
               </span>
               <ArrowUpRightIcon className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:-translate-y-[2px] group-hover:translate-x-1 transition-all duration-200" />
             </Button>
-            {index < visibleActivities.length - 1 && (
+            {index < courses.slice(0, 3).length - 1 && (
               <span className="mx-2 text-foreground/20">|</span>
             )}
           </>

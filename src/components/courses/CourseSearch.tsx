@@ -1,4 +1,4 @@
-import { Clock, CornerUpRight, X } from "lucide-react";
+import { CornerUpRight, X } from "lucide-react";
 import React, {
   startTransition,
   useEffect,
@@ -18,7 +18,6 @@ import useCourseHistory from "@/stores/CourseHistoryStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
-import { useTranslation } from "@/contexts/TranslationsContext";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 const typewriterCourses: string[] = [
@@ -74,7 +73,6 @@ const CourseSearch: React.FC<CourseSearchProps> = ({
   const { addCourse, courses, loadCourses } = useCourseHistory();
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const [courseCode, setCourseCode] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
