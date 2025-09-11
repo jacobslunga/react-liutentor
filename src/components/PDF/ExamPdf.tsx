@@ -1,5 +1,5 @@
 import { useCallback, type FC } from "react";
-import PdfRenderer from "@/components/PDF/PDFRenderer";
+import PdfRenderer from "./PdfRenderer";
 import usePdf from "@/hooks/usePdf";
 
 interface Props {
@@ -15,7 +15,7 @@ const ExamPdf: FC<Props> = ({ pdfUrl }) => {
   );
 
   return (
-    <div className="w-full h-full overflow-auto">
+    <div className="w-full h-full overflow-hidden">
       <PdfRenderer
         scale={scale}
         rotation={rotation}

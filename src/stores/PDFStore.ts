@@ -15,7 +15,7 @@ type PdfStore = {
   setRotation: (key: PdfKey, rotation: number) => void;
 };
 
-const initialState: PdfState = { scale: 1.4, numPages: 0, rotation: 0 };
+const initialState: PdfState = { scale: 1.2, numPages: 0, rotation: 0 };
 
 const usePdfStore = create<PdfStore>((set) => ({
   pdfs: {

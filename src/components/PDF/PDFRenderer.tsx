@@ -1,6 +1,10 @@
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+
 import { Document, Page, pdfjs } from "react-pdf";
 import { useState, type FC } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Loader2 } from "lucide-react";
 
 type PdfError = "no-url" | "no-load";
 
@@ -61,34 +65,37 @@ const PdfRenderer: FC<PdfRendererProps> = ({
       style={{
         backgroundColor: "var(--background)",
         color: "var(--foreground)",
+        filter: isDark ? "invert(0.98) brightness(1) contrast(0.8)" : "none",
       }}
     >
-      <div
-        className="w-full h-full"
-        style={{
-          filter: isDark ? "invert(0.98) brightness(1) contrast(0.8)" : "none",
-          backgroundColor: "transparent",
-        }}
+      <Document
+        file={pdfUrl}
+        onLoadSuccess={onLoadSuccess}
+        className="w-full h-full flex items-center justify-start space-y-5 flex-col"
+        loading={() => (
+          <div className="w-screen h-screen flex items-center justify-center">
+            <Loader2 className="animate-spin w-5 h-5" />
+          </div>
+        )}
       >
-        <Document
-          file={pdfUrl}
-          onLoadSuccess={onLoadSuccess}
-          className="w-full h-full flex items-center justify-start space-y-5 flex-col"
-        >
-          {Array.from({ length: numPages || 0 }, (_, i) => (
-            <Page
-              key={i + 1}
-              pageNumber={i + 1}
-              rotate={(pageRotations[i + 1] || 0) + rotation}
-              scale={scale}
-              onLoadSuccess={(page) => handlePageLoadSuccess(page, i + 1)}
-              className="pdf-page"
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-            />
-          ))}
-        </Document>
-      </div>
+        {Array.from({ length: numPages || 0 }, (_, i) => (
+          <Page
+            key={i + 1}
+            pageNumber={i + 1}
+            rotate={(pageRotations[i + 1] || 0) + rotation}
+            scale={scale}
+            onLoadSuccess={(page) => handlePageLoadSuccess(page, i + 1)}
+            className="pdf-page"
+            renderTextLayer={true}
+            renderAnnotationLayer={true}
+            loading={() => (
+              <div className="w-screen h-screen flex items-center justify-center">
+                <Loader2 className="animate-spin w-5 h-5" />
+              </div>
+            )}
+          />
+        ))}
+      </Document>
     </div>
   );
 };

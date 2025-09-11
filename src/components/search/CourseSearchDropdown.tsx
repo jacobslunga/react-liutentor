@@ -52,6 +52,7 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
   }, []);
 
   const recentCourseCodes = courses
+    .sort((a, b) => b.timestamp - a.timestamp)
     .map((course) => course.courseCode)
     .slice(0, 4);
 
@@ -205,21 +206,24 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
               <div className="px-3 pt-3 pb-1 text-muted-foreground font-medium text-xs">
                 {t("recentSearches")}
               </div>
-              {recentCourseCodes.map((suggestion, index) => (
-                <div
-                  key={`recent-${suggestion}`}
-                  className={`flex items-center px-3 py-2 cursor-pointer transition-colors duration-150 ${
-                    index === selectedIndex
-                      ? "bg-muted text-foreground"
-                      : "hover:bg-muted/50"
-                  }`}
-                  onMouseDown={() => handleSelectCourse(suggestion)}
-                >
-                  <ClockIcon className="w-4 h-4 mr-2 opacity-70" />
-                  <span className="flex-1">{suggestion}</span>
-                  <CornerUpRight className="w-4 h-4 opacity-50" />
-                </div>
-              ))}
+              {courses
+                .map((c) => c.courseCode)
+                .slice(0, 4)
+                .map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className={`flex items-center px-3 py-2 cursor-pointer transition-colors duration-150 ${
+                      index === selectedIndex
+                        ? "bg-muted text-foreground"
+                        : "hover:bg-muted/50"
+                    }`}
+                    onMouseDown={() => handleSelectCourse(suggestion)}
+                  >
+                    <ClockIcon className="w-4 h-4 mr-2 opacity-70" />
+                    <span className="flex-1">{suggestion}</span>
+                    <CornerUpRight className="w-4 h-4 opacity-50" />
+                  </div>
+                ))}
             </>
           )}
 
@@ -230,7 +234,7 @@ const CourseSearchDropdown: React.FC<CourseSearchDropdownProps> = ({
               </div>
               {suggestions.slice(0, 10).map((suggestion, index) => (
                 <div
-                  key={suggestion}
+                  key={index}
                   className={`flex items-center px-3 py-2 cursor-pointer transition-colors duration-150 ${
                     index === selectedIndex
                       ? "bg-muted text-foreground"

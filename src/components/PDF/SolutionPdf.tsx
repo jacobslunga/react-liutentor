@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, type FC } from "react";
-import PdfRenderer from "@/components/PDF/PDFRenderer";
+import PdfRenderer from "./PdfRenderer";
 import { motion } from "framer-motion";
 import usePdf from "@/hooks/usePdf";
 
@@ -26,7 +26,7 @@ const SolutionPdf: FC<Props> = ({ pdfUrl }) => {
 
   return (
     <div
-      className="w-full h-full relative overflow-auto"
+      className="w-full h-full relative"
       onMouseEnter={() => setSolutionIsBlurred(false)}
       onMouseLeave={() => setSolutionIsBlurred(true)}
     >

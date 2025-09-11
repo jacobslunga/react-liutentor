@@ -22,12 +22,31 @@ const useCourseHistory = create<CourseHistory>((set) => ({
       return { courses: parsed };
     }),
   addCourse: (courseCode: string) =>
-    set(() => {
+    set((state) => {
+      if (courseCode.length !== 6) {
+        return { courses: state.courses };
+      }
+
       const saved = localStorage.getItem(STORAGE_KEY);
       const savedCourses = saved ? (JSON.parse(saved) as Course[]) : [];
 
-      if (savedCourses.find((sc) => sc.courseCode === courseCode)) {
-        return { courses: savedCourses };
+      const existingIndex = savedCourses.findIndex(
+        (sc) => sc.courseCode === courseCode
+      );
+
+      if (existingIndex !== -1) {
+        const updatedCourse: Course = {
+          courseCode,
+          timestamp: Date.now(),
+        };
+
+        const updated = [
+          updatedCourse,
+          ...savedCourses.filter((_, i) => i !== existingIndex),
+        ];
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return { courses: updated };
       }
 
       const newCourse: Course = { courseCode, timestamp: Date.now() };
