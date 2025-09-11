@@ -7,11 +7,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetadata } from "@/hooks/useMetadata";
 import { useParams } from "react-router-dom";
 import usePdf from "@/hooks/usePdf";
-import { useTranslation } from "@/contexts/TranslationsContext";
 import DesktopView from "@/components/PDF/views/DesktopPdfView";
 import MobilePdfView from "@/components/PDF/views/MobilePdfView";
+import PdfHeader from "@/components/PDF/PdfHeader";
 
-const TentaPage: FC = () => {
+const ExamPage: FC = () => {
   const { language } = useLanguage();
   const exam = usePdf("exam");
   const solution = usePdf("solution");
@@ -91,11 +91,17 @@ const TentaPage: FC = () => {
   }
 
   return (
-    <div className="h-screen w-screen">
-      <DesktopView examDetail={examDetail} />
-      <MobilePdfView examDetail={examDetail} />
+    <div className="h-screen w-screen flex flex-col bg-background">
+      {/* Fixed Header */}
+      <PdfHeader exams={courseData.exams} />
+
+      {/* Content area fills remaining height */}
+      <div className="flex-1 overflow-hidden mt-14">
+        <DesktopView examDetail={examDetail} />
+        <MobilePdfView examDetail={examDetail} />
+      </div>
     </div>
   );
 };
 
-export default TentaPage;
+export default ExamPage;

@@ -30,6 +30,7 @@ import { type Exam } from "@/types/exam";
 import { getColumns } from "@/components/data-table/columns";
 import { useTranslation } from "@/contexts/TranslationsContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import useSelectedExam from "@/stores/SelectedExamStore";
 
 interface Props {
   data: Exam[];
@@ -49,6 +50,8 @@ export function DataTable({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const { setSelectedExam } = useSelectedExam();
+
   const [filter, setFilter] = useState("");
   const [selectedExamType, setSelectedExamType] = useState<String | null>("");
 
@@ -193,11 +196,12 @@ export function DataTable({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  onClick={() =>
+                  onClick={() => {
+                    setSelectedExam(row.original);
                     navigate(
                       `/search/${row.original.course_code}/${row.original.id}`
-                    )
-                  }
+                    );
+                  }}
                   className="group cursor-pointer transition-all border-t"
                 >
                   {row.getVisibleCells().map((cell) => (

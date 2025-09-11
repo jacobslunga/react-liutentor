@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { useState, type FC } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PdfError = "no-url" | "no-load";
 
@@ -60,8 +61,8 @@ const PdfRenderer: FC<PdfRendererProps> = ({
   const isDark = effectiveTheme === "dark";
 
   return (
-    <div
-      className="w-full h-full overflow-auto"
+    <ScrollArea
+      className="w-full h-full"
       style={{
         backgroundColor: "var(--background)",
         color: "var(--foreground)",
@@ -73,7 +74,7 @@ const PdfRenderer: FC<PdfRendererProps> = ({
         onLoadSuccess={onLoadSuccess}
         className="w-full h-full flex items-center justify-start space-y-5 flex-col"
         loading={() => (
-          <div className="w-screen h-screen flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
             <Loader2 className="animate-spin w-5 h-5" />
           </div>
         )}
@@ -89,14 +90,14 @@ const PdfRenderer: FC<PdfRendererProps> = ({
             renderTextLayer={true}
             renderAnnotationLayer={true}
             loading={() => (
-              <div className="w-screen h-screen flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center">
                 <Loader2 className="animate-spin w-5 h-5" />
               </div>
             )}
           />
         ))}
       </Document>
-    </div>
+    </ScrollArea>
   );
 };
 

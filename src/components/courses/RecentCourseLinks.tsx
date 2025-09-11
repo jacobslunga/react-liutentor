@@ -33,13 +33,12 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
     <div className="w-full max-w-md">
       <div className="flex items-center justify-center w-full overflow-x-auto space-x-3 text-sm">
         {courses.slice(0, 3).map((activity, index) => (
-          <>
+          <div key={index + activity.timestamp}>
             <Button
               onClick={() => handleSelectCourse(activity.courseCode)}
               variant="ghost"
               size="sm"
               className="group"
-              key={index}
             >
               <span className="text-foreground hover:text-foreground transition-colors">
                 {activity.courseCode}
@@ -49,7 +48,7 @@ const RecentCourseLinks = ({ searchMethod }: Props) => {
             {index < courses.slice(0, 3).length - 1 && (
               <span className="mx-2 text-foreground/20">|</span>
             )}
-          </>
+          </div>
         ))}
       </div>
     </div>

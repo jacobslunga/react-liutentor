@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Upload } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/exams-data-table";
@@ -16,6 +16,7 @@ import { kurskodArray } from "@/data/kurskoder";
 import { useCourseExams } from "@/api/hooks/useCourseExams";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetadata } from "@/hooks/useMetadata";
+import useSelectedExam from "@/stores/SelectedExamStore";
 
 const LoadingSpinner = ({ language }: { language: any }) => (
   <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -62,6 +63,7 @@ const TentaSearchPage: React.FC = () => {
   const { language } = useLanguage();
   const { courseData, isLoading, isError } = useCourseExams(courseCode || "");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const { clearSelectedExam } = useSelectedExam();
 
   const formattedExams = useMemo(() => {
     if (!courseData?.exams) return [];
@@ -105,6 +107,10 @@ const TentaSearchPage: React.FC = () => {
     twitterDescription: pageDescription,
     canonical: `${window.location.origin}/course/${courseCode}`,
   });
+
+  useEffect(() => {
+    clearSelectedExam();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
